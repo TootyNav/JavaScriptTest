@@ -1,0 +1,110 @@
+﻿@model  IEnumerable<JavascriptTest.Models.Person>
+@{
+    Layout = null;
+}
+
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.title People</title>
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @Styles.Render("~/Content/css")
+</head>
+<body>
+    <div>
+        <p class="h1">People</p>
+
+        <table id="people">
+            <thead>
+                <tr>
+                    <th>PersonId</th>
+                    <th>Name</th>
+                    <th>Palindrome</th>
+                    <th>Authorised</th>
+                    <th>Enabled</th>
+                    <th>Colours</th>
+                </tr>
+            </thead>
+        </table>
+
+    </div>
+</body>
+</html>
+
+
+<script>
+        
+    //var req = new XMLHttpRequest();
+    //req.open('GET', '/api/People');
+    //req.onload = function () {
+    //    console.log(req.responseText);
+    //};
+    //req.send();
+
+
+    $(document).ready(function () {
+        $("#people").DataTable({
+            "ajax": {
+                "url": "/NewHome/GetPeople",
+                "type": "GET",
+                "datatype" : "json"
+            },
+            "columns": [
+                { "data": "PersonId", "width" : 50},
+                {
+                    "data": "FullName", "width": 250,
+                    render: function (data, type, person) {
+
+
+                        return "<a href='/NewHome/Edit/" + person.PersonId + "'>" + data + "</a>"
+                    }
+                },
+                { "data": null, "width": 200 },
+                { "data": "IsAuthorised", "width": 200 },
+                { "data": "IsEnabled", "width": 200 },
+                { "data": "Colours", "width": 200 }
+            ],
+            "paging": false,
+            "searching": false,
+            "ordering": false,
+            "info" : false,
+            "createdRow": function (row, data, index) {
+
+                //Find palindrome
+                //trim text
+                var trimStr = $.trim(data["FullName"]).replace(/\s/g, '').toString().toUpperCase();
+
+                //Reverce
+                var RevtrimStr = trimStr.split("").reverse().join("").toString().toUpperCase();
+                if (RevtrimStr === trimStr) {
+                    $('td', row).eq(1).addClass('green').text("Yes");
+                } else {
+                    $('td', row).eq(1).addClass('red').text('No');
+                }
+
+
+                //Change colour
+                ChangeColours("IsAuthorised", 2);
+                ChangeColours("IsEnabled", 3);
+
+                //Change the td text colours based on their values
+                function ChangeColours(s, i) {
+                    if (data[s] == true) {
+                        $('td', row).eq(i).addClass('green').text("Yes");
+                    } else {
+                        $('td', row).eq(i).addClass('red').text('No');
+                    }
+                };
+            },
+            "columnDefs": [
+                {"visible" : false, "targets": [0]}
+            ]
+            
+        });
+    });
+
+</script>

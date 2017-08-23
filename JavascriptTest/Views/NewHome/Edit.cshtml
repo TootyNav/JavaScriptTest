@@ -1,0 +1,179 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    
+    <meta name="viewport" content="width=device-width" />
+    <title></title>
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @Styles.Render("~/Content/css")
+</head>
+<body>
+    <div>
+    <p class="fullName h1"></p>    
+    </div>
+    <div> 
+        @using (Html.BeginForm())
+        {
+            <div>
+                <p class="h3">User Details </p>
+
+
+                <table>
+                    <tr>
+                        <td><label>Authorised</label></td>
+                        <td><input class="IsAuthorised" type="checkbox" name="name" value="" /></td>
+                    </tr>
+                    <tr>
+                        <td><label>Enabled</label></td>
+                        <td><input class="IsEnabled" type="checkbox" name="name" value="" /></td>
+                    </tr>
+
+                    <tr><td><p class="h3">Favourite Colours</p></td></tr>
+
+                    <tr>
+                        <td><label>Blue</label></td>
+                        <td><input class="blue" type="checkbox" name="name" value="" /></td>
+                    </tr>
+                    <tr>
+                        <td><label>Green</label></td>
+                        <td><input class="green" type="checkbox" name="name" value="" /></td>
+                    </tr>
+                    <tr>
+                        <td><label>Red</label></td>
+                        <td><input class="red" type="checkbox" name="name" value="" /></td>
+                    </tr>
+                    <tr><td></td>
+                    
+                        <td>
+                            <input class="saveList" type="button" name="save" value="Save Changes" />
+                            <input type="button" name="cancel" value="Cancel" />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        }
+
+    </div>
+</body>
+</html>
+
+<script>
+
+
+
+    $("documnet").ready(function () {
+        //Hide
+        $("label").click(function () {
+            $(this).parent().siblings().children().toggle();
+        });
+
+
+        //Save
+        $(".saveList").click(function () {
+
+            var json = setJson();
+            //var data = { "data": json };
+
+            console.log(data);
+
+            //$.ajax({
+            //    type: "POST",
+            //    URL: '/NewHome/Update/' + json,
+            //    success: function () {
+            //        alert("done");
+            //        console.log(json);
+            //    },
+               
+            //});
+
+            $.post("/NewHome/Update/" + data)
+
+
+            function setJson() {
+                var detail = {};
+                var list = [];
+                var colourList = [];
+
+                detail["PersonId"] =  @ViewBag.id;
+
+                if ($('.IsAuthorised').is(':checked')) {
+                    detail["IsAuthorised"] = "true";
+                } else {
+                    detail["IsAuthorised"] = "false";
+                }
+
+                if ($('.IsEnabled').is(':checked')) {
+                    detail["IsEnabled"] = "true";
+                } else {
+                    detail["IsEnabled"] = "false";
+                }
+
+                //set colours
+                if ($('.blue').is(':checked')) {
+                    colourList.push("3");
+                } 
+
+                if ($('.green').is(':checked')) {
+                    colourList.push("2");
+                } 
+
+                if ($('.red').is(':checked')) {
+                    colourList.push("1");
+                }
+
+                detail["Colours"] = colourList;
+
+                list.push(detail);
+
+                return JSON.stringify(list);
+            }
+        });
+
+
+        //call server
+        $.ajax({
+            url: '/NewHome/GetDetails/' + @ViewBag.id,
+            method: 'GET',
+            dataType: 'json',
+            contentType: 'application/json; charset=utf-8',
+            success: function (data) {
+
+                $('.fullName').text(data["data"].FullName);
+
+                //Detail fields 
+                if (data["data"].IsAuthorised) {
+                    $('.IsAuthorised').prop('checked', true);
+                }
+
+                if (data["data"].IsEnabled) {
+                    $('.IsEnabled').prop('checked', true);
+                }
+
+                //Colour fields
+                for (i in data["data"].Colours) {
+                    if (data["data"].Colours[i] == "Blue") {
+                        $('.blue').prop('checked', true);
+                    } 
+
+                    if (data["data"].Colours[i] == "Green") {
+                        $('.green').prop('checked', true);
+                    }
+        
+                    if (data["data"].Colours[i] == "Red") {
+                        $('.red').prop('checked', true);
+                    }
+                }
+
+            },
+
+        })
+
+        
+    });
+</script>

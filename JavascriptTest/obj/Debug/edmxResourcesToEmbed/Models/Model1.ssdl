@@ -1,0 +1,67 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="TechTestModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+  <EntityType Name="Colours">
+    <Key>
+      <PropertyRef Name="ColourId" />
+    </Key>
+    <Property Name="ColourId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="Name" Type="nvarchar" MaxLength="50" Nullable="false" />
+    <Property Name="IsEnabled" Type="bit" Nullable="false" />
+  </EntityType>
+  <EntityType Name="FavouriteColours">
+    <Key>
+      <PropertyRef Name="PersonId" />
+      <PropertyRef Name="ColourId" />
+    </Key>
+    <Property Name="PersonId" Type="int" Nullable="false" />
+    <Property Name="ColourId" Type="int" Nullable="false" />
+  </EntityType>
+  <EntityType Name="People">
+    <Key>
+      <PropertyRef Name="PersonId" />
+    </Key>
+    <Property Name="PersonId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="FirstName" Type="nvarchar" MaxLength="50" Nullable="false" />
+    <Property Name="LastName" Type="nvarchar" MaxLength="50" Nullable="false" />
+    <Property Name="IsAuthorised" Type="bit" Nullable="false" />
+    <Property Name="IsValid" Type="bit" Nullable="false" />
+    <Property Name="IsEnabled" Type="bit" Nullable="false" />
+  </EntityType>
+  <Association Name="FK_FavouriteColours_Colours">
+    <End Role="Colours" Type="Self.Colours" Multiplicity="1" />
+    <End Role="FavouriteColours" Type="Self.FavouriteColours" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Colours">
+        <PropertyRef Name="ColourId" />
+      </Principal>
+      <Dependent Role="FavouriteColours">
+        <PropertyRef Name="ColourId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_FavouriteColours_People">
+    <End Role="People" Type="Self.People" Multiplicity="1" />
+    <End Role="FavouriteColours" Type="Self.FavouriteColours" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="People">
+        <PropertyRef Name="PersonId" />
+      </Principal>
+      <Dependent Role="FavouriteColours">
+        <PropertyRef Name="PersonId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityContainer Name="TechTestModelStoreContainer">
+    <EntitySet Name="Colours" EntityType="Self.Colours" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="FavouriteColours" EntityType="Self.FavouriteColours" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="People" EntityType="Self.People" Schema="dbo" store:Type="Tables" />
+    <AssociationSet Name="FK_FavouriteColours_Colours" Association="Self.FK_FavouriteColours_Colours">
+      <End Role="Colours" EntitySet="Colours" />
+      <End Role="FavouriteColours" EntitySet="FavouriteColours" />
+    </AssociationSet>
+    <AssociationSet Name="FK_FavouriteColours_People" Association="Self.FK_FavouriteColours_People">
+      <End Role="People" EntitySet="People" />
+      <End Role="FavouriteColours" EntitySet="FavouriteColours" />
+    </AssociationSet>
+  </EntityContainer>
+</Schema>
